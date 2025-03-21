@@ -1,0 +1,21 @@
+.{
+    .name = .sokol_2d,
+    .version = "0.0.0",
+    .fingerprint = 0xf2edba15a93ae3e2,
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{
+        .sokol = .{
+            .url = "git+https://github.com/floooh/sokol-zig.git#15cc43a2d9d2e26b000d33a5d76f095d5310c454",
+            .hash = "sokol-0.1.0-pb1HK5XdOQBERyKPPDUAvKpKELCH0FldJD_Y1nkelJyo",
+        },
+        .geom = .{
+            .url = "git+https://github.com/Games-by-Mason/geom#53ba19d8f51ab05481ddffbee4bb1a6bdd1c845e",
+            .hash = "geom-0.0.0-U1ma37AKAQBCoMadEkHNHxNPV5--jUhoRHwzU_SnrGqC",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

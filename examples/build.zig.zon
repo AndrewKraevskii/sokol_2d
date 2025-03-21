@@ -1,0 +1,20 @@
+.{
+    .name = .sokol_2d,
+    .version = "0.0.0",
+    .fingerprint = 0xf2edba15a93ae3e2,
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{
+        .sokol = .{
+            .url = "git+https://github.com/floooh/sokol-zig.git#b5d0c55575318f05d876556a4b839c9254b90cc0",
+            .hash = "sokol-0.1.0-pb1HKzmnLAB1CE_dio4WocdQRWzeiHF7Qb4XOImM22nZ",
+        },
+        .sokol_2d = .{
+            .path = "../",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
