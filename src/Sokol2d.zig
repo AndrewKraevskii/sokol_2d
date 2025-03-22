@@ -27,37 +27,61 @@ pub const Vertex = extern struct {
     color0: [4]f32,
 };
 
-pub const Color = [4]f32;
+pub const Color = extern struct {
+    r: f32,
+    g: f32,
+    b: f32,
+    a: f32,
+
+    pub const white: Color = .{ .r = 1, .g = 1, .b = 1, .a = 1 };
+    pub const black: Color = .{ .r = 0, .g = 0, .b = 0, .a = 1 };
+    pub const red: Color = .{ .r = 1, .g = 0, .b = 0, .a = 1 };
+    pub const green: Color = .{ .r = 0, .g = 1, .b = 0, .a = 1 };
+    pub const blue: Color = .{ .r = 0, .g = 0, .b = 1, .a = 1 };
+    pub const yellow: Color = .{ .r = 1, .g = 1, .b = 0, .a = 1 };
+    pub const cyan: Color = .{ .r = 0, .g = 1, .b = 1, .a = 1 };
+    pub const magenta: Color = .{ .r = 1, .g = 0, .b = 1, .a = 1 };
+    pub const orange: Color = .{ .r = 1, .g = 0.5, .b = 0, .a = 1 };
+    pub const purple: Color = .{ .r = 0.5, .g = 0, .b = 0.5, .a = 1 };
+    pub const gray: Color = .{ .r = 0.5, .g = 0.5, .b = 0.5, .a = 1 };
+    pub const light_gray: Color = .{ .r = 0.75, .g = 0.75, .b = 0.75, .a = 1 };
+    pub const dark_gray: Color = .{ .r = 0.25, .g = 0.25, .b = 0.25, .a = 1 };
+    pub const brown: Color = .{ .r = 0.6, .g = 0.4, .b = 0.2, .a = 1 };
+    pub const pink: Color = .{ .r = 1, .g = 0.75, .b = 0.8, .a = 1 };
+    pub const lime: Color = .{ .r = 0.75, .g = 1, .b = 0, .a = 1 };
+    pub const teal: Color = .{ .r = 0, .g = 0.5, .b = 0.5, .a = 1 };
+    pub const navy: Color = .{ .r = 0, .g = 0, .b = 0.5, .a = 1 };
+};
 
 pub fn drawRect(s2d: *Sokol2d, x: f32, y: f32, width: f32, height: f32, color: Color) void {
     const h = height;
     const w = width;
     const coords: [6]Vertex = .{
-        .{ .pos = .{ .x = x, .y = y + h }, .color0 = color },
-        .{ .pos = .{ .x = x, .y = y }, .color0 = color },
-        .{ .pos = .{ .x = x + w, .y = y }, .color0 = color },
-        .{ .pos = .{ .x = x, .y = y + h }, .color0 = color },
-        .{ .pos = .{ .x = x + w, .y = y }, .color0 = color },
-        .{ .pos = .{ .x = x + w, .y = y + h }, .color0 = color },
+        .{ .pos = .{ .x = x, .y = y + h }, .color0 = @bitCast(color) },
+        .{ .pos = .{ .x = x, .y = y }, .color0 = @bitCast(color) },
+        .{ .pos = .{ .x = x + w, .y = y }, .color0 = @bitCast(color) },
+        .{ .pos = .{ .x = x, .y = y + h }, .color0 = @bitCast(color) },
+        .{ .pos = .{ .x = x + w, .y = y }, .color0 = @bitCast(color) },
+        .{ .pos = .{ .x = x + w, .y = y + h }, .color0 = @bitCast(color) },
     };
     s2d.vertecies.appendSliceAssumeCapacity(&coords);
 }
 
 pub fn drawRectGradient(s2d: *Sokol2d, x: f32, y: f32, width: f32, height: f32, color1: Color, color2: Color, orientation: enum { horisontal, vertical }) void {
     const coords: [6]Vertex = if (orientation == .horisontal) .{
-        .{ .pos = .{ .x = x, .y = y + height }, .color0 = color1 },
-        .{ .pos = .{ .x = x, .y = y }, .color0 = color1 },
-        .{ .pos = .{ .x = x + width, .y = y }, .color0 = color2 },
-        .{ .pos = .{ .x = x, .y = y + height }, .color0 = color1 },
-        .{ .pos = .{ .x = x + width, .y = y }, .color0 = color2 },
-        .{ .pos = .{ .x = x + width, .y = y + height }, .color0 = color2 },
+        .{ .pos = .{ .x = x, .y = y + height }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x, .y = y }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x + width, .y = y }, .color0 = @bitCast(color2) },
+        .{ .pos = .{ .x = x, .y = y + height }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x + width, .y = y }, .color0 = @bitCast(color2) },
+        .{ .pos = .{ .x = x + width, .y = y + height }, .color0 = @bitCast(color2) },
     } else .{
-        .{ .pos = .{ .x = x, .y = y + height }, .color0 = color2 },
-        .{ .pos = .{ .x = x, .y = y }, .color0 = color1 },
-        .{ .pos = .{ .x = x + width, .y = y }, .color0 = color1 },
-        .{ .pos = .{ .x = x, .y = y + height }, .color0 = color2 },
-        .{ .pos = .{ .x = x + width, .y = y }, .color0 = color1 },
-        .{ .pos = .{ .x = x + width, .y = y + height }, .color0 = color2 },
+        .{ .pos = .{ .x = x, .y = y + height }, .color0 = @bitCast(color2) },
+        .{ .pos = .{ .x = x, .y = y }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x + width, .y = y }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x, .y = y + height }, .color0 = @bitCast(color2) },
+        .{ .pos = .{ .x = x + width, .y = y }, .color0 = @bitCast(color1) },
+        .{ .pos = .{ .x = x + width, .y = y + height }, .color0 = @bitCast(color2) },
     };
     s2d.vertecies.appendSliceAssumeCapacity(&coords);
 }
@@ -68,9 +92,9 @@ pub fn drawTriangle(
     color: [4]f32,
 ) void {
     const coords: [6]Vertex = .{
-        .{ .pos = points[0], .color0 = color },
-        .{ .pos = points[1], .color0 = color },
-        .{ .pos = points[2], .color0 = color },
+        .{ .pos = points[0], .color0 = @bitCast(color) },
+        .{ .pos = points[1], .color0 = @bitCast(color) },
+        .{ .pos = points[2], .color0 = @bitCast(color) },
     };
     s2d.vertecies.appendSliceAssumeCapacity(&coords);
 }
@@ -88,12 +112,12 @@ pub fn drawLine(s2d: *Sokol2d, from: Vec2, to: Vec2, thickness: f32, color: Colo
     const end_down = to.minus(rotated);
 
     const coords: [6]Vertex = .{
-        .{ .pos = start_up, .color0 = color },
-        .{ .pos = end_up, .color0 = color },
-        .{ .pos = start_down, .color0 = color },
-        .{ .pos = start_down, .color0 = color },
-        .{ .pos = end_up, .color0 = color },
-        .{ .pos = end_down, .color0 = color },
+        .{ .pos = start_up, .color0 = @bitCast(color) },
+        .{ .pos = end_up, .color0 = @bitCast(color) },
+        .{ .pos = start_down, .color0 = @bitCast(color) },
+        .{ .pos = start_down, .color0 = @bitCast(color) },
+        .{ .pos = end_up, .color0 = @bitCast(color) },
+        .{ .pos = end_down, .color0 = @bitCast(color) },
     };
     s2d.vertecies.appendSliceAssumeCapacity(&coords);
 }
@@ -110,9 +134,9 @@ pub fn drawCircle(s2d: *Sokol2d, center: Vec2, radius: f32, color: Color, num_se
         };
 
         const coords: [3]Vertex = .{
-            .{ .pos = center, .color0 = color },
-            .{ .pos = previous_point, .color0 = color },
-            .{ .pos = next_point, .color0 = color },
+            .{ .pos = center, .color0 = @bitCast(color) },
+            .{ .pos = previous_point, .color0 = @bitCast(color) },
+            .{ .pos = next_point, .color0 = @bitCast(color) },
         };
 
         s2d.vertecies.appendSliceAssumeCapacity(&coords);

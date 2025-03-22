@@ -21,10 +21,6 @@ fn init() callconv(.c) void {
     };
 }
 
-const white: [4]f32 = .{ 1, 1, 1, 1 };
-const red: [4]f32 = .{ 1, 0, 0, 1 };
-const yellow: [4]f32 = .{ 1, 1, 0, 0.1 };
-
 fn frame() callconv(.c) void {
     const width: u31 = @intCast(sokol.app.width());
     const height: u31 = @intCast(sokol.app.height());
@@ -47,9 +43,9 @@ fn frame() callconv(.c) void {
         },
     });
 
-    state.sokol_2d.drawLine(.{ .x = -1, .y = -1 }, .{ .x = 1, .y = 1 }, 0.01, red);
-    state.sokol_2d.drawCircle(.{ .x = 0, .y = 0 }, 0.1, yellow, 30);
-    state.sokol_2d.drawRectGradient(0, 0, 0.3, 0.2, red, yellow, .horisontal);
+    state.sokol_2d.drawLine(.{ .x = -1, .y = -1 }, .{ .x = 1, .y = 1 }, 0.01, .red);
+    state.sokol_2d.drawCircle(.{ .x = 0, .y = 0 }, 0.1, .yellow, 30);
+    state.sokol_2d.drawRectGradient(0, 0, 0.3, 0.2, .red, .yellow, .vertical);
 
     {
         sokol.gfx.beginPass(.{
