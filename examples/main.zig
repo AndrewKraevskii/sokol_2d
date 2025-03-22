@@ -27,10 +27,13 @@ fn frame() callconv(.c) void {
 
     const ratio = @as(f32, @floatFromInt(width)) / @as(f32, @floatFromInt(height));
     state.sokol_2d.begin(.{
-        .viewport = .{ .start = .zero, .end = .{
-            .x = @floatFromInt(width),
-            .y = @floatFromInt(height),
-        } },
+        .viewport = .{
+            .start = .zero,
+            .end = .{
+                .x = @floatFromInt(width),
+                .y = @floatFromInt(height),
+            },
+        },
         .coordinates = .{
             .start = .{
                 .x = -ratio,

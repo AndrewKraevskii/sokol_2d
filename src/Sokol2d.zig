@@ -9,17 +9,21 @@ const log = std.log.scoped(.sokol_2d);
 
 const Sokol2d = @This();
 
-const max_commands = 0x1000;
+const max_vertecies = 0x1000;
 
 pipeline: sokol.gfx.Pipeline,
 vertecies: std.ArrayListUnmanaged(Vertex),
 vertex_buffer: sokol.gfx.Buffer,
-screen_size: [2]u31,
+viewport: AABB,
 projection: Mat2x3,
 
 pub const AABB = struct {
     start: Vec2,
     end: Vec2,
+
+    pub fn size(aabb: AABB) Vec2 {
+        return aabb.end.minus(aabb.start);
+    }
 };
 
 pub const Vertex = extern struct {
@@ -159,20 +163,29 @@ pub fn init(gpa: std.mem.Allocator) error{OutOfMemory}!Sokol2d {
             },
             .cull_mode = .NONE,
         }),
-        .vertecies = try .initCapacity(gpa, max_commands),
-        .screen_size = .{ 0, 0 },
+        .vertecies = try .initCapacity(gpa, max_vertecies),
+        .viewport = .{ .start = .zero, .end = .zero },
         .vertex_buffer = sokol.gfx.makeBuffer(.{
             .type = .VERTEXBUFFER,
             .usage = .DYNAMIC,
             .label = "sokol2d vertex buffer",
-            .size = max_commands,
+            .size = max_vertecies,
         }),
         .projection = .identity,
     };
 }
 
 pub fn flush(s2d: *Sokol2d) void {
-    sokol.gfx.applyViewport(0, 0, s2d.screen_size[0], s2d.screen_size[1], true);
+    const viewport_size = s2d.viewport.size();
+
+    sokol.gfx.applyViewport(
+        @intFromFloat(s2d.viewport.start.x),
+        @intFromFloat(s2d.viewport.start.y),
+        @intFromFloat(viewport_size.x),
+        @intFromFloat(viewport_size.y),
+        true,
+    );
+
     sokol.gfx.applyPipeline(s2d.pipeline);
 
     for (s2d.vertecies.items) |*vertex| {
@@ -197,7 +210,7 @@ const BeginConfig = struct {
 };
 
 pub fn begin(s2d: *Sokol2d, config: BeginConfig) void {
-    const scale_vec = config.coordinates.end.minus(config.coordinates.start);
+    const scale_vec = config.coordinates.size();
     const translate: Mat2x3 = .translation(config.coordinates.start.negated());
     const scale: Mat2x3 = .scale(.{
         .x = 1 / scale_vec.x,
@@ -206,10 +219,8 @@ pub fn begin(s2d: *Sokol2d, config: BeginConfig) void {
 
     s2d.projection =
         scale.times(translate);
-    s2d.screen_size = .{
-        @intFromFloat(config.viewport.end.x),
-        @intFromFloat(config.viewport.end.y),
-    };
+
+    s2d.viewport = config.viewport;
 }
 
 pub fn deinit(s2d: *Sokol2d, gpa: std.mem.Allocator) void {
