@@ -2,6 +2,7 @@ const std = @import("std");
 const sokol = @import("sokol");
 const geom = @import("geom");
 const Vec2 = geom.Vec2;
+const Mat2x3 = geom.Mat2x3;
 const shader = @import("shaders/basic.glsl.zig");
 
 const log = std.log.scoped(.sokol_2d);
@@ -14,9 +15,14 @@ pipeline: sokol.gfx.Pipeline,
 vertecies: std.ArrayListUnmanaged(Vertex),
 vertex_buffer: sokol.gfx.Buffer,
 screen_size: [2]u31,
-depth: f32,
+projection: Mat2x3,
 
-const Vertex = extern struct {
+pub const AABB = struct {
+    start: Vec2,
+    end: Vec2,
+};
+
+pub const Vertex = extern struct {
     pos: Vec2,
     color0: [4]f32,
 };
@@ -80,6 +86,7 @@ pub fn drawLine(s2d: *Sokol2d, from: Vec2, to: Vec2, thickness: f32, color: Colo
     const end_up = to.plus(rotated);
     const start_down = from.minus(rotated);
     const end_down = to.minus(rotated);
+
     const coords: [6]Vertex = .{
         .{ .pos = start_up, .color0 = color },
         .{ .pos = end_up, .color0 = color },
@@ -136,7 +143,7 @@ pub fn init(gpa: std.mem.Allocator) error{OutOfMemory}!Sokol2d {
             .label = "sokol2d vertex buffer",
             .size = max_commands,
         }),
-        .depth = 0,
+        .projection = .identity,
     };
 }
 
@@ -144,18 +151,41 @@ pub fn flush(s2d: *Sokol2d) void {
     sokol.gfx.applyViewport(0, 0, s2d.screen_size[0], s2d.screen_size[1], true);
     sokol.gfx.applyPipeline(s2d.pipeline);
 
+    for (s2d.vertecies.items) |*vertex| {
+        vertex.pos = s2d.projection.timesPoint(vertex.pos);
+    }
     sokol.gfx.updateBuffer(s2d.vertex_buffer, sokol.gfx.asRange(s2d.vertecies.items));
+
     var bindings: sokol.gfx.Bindings = .{};
     bindings.vertex_buffers[0] = s2d.vertex_buffer;
 
     sokol.gfx.applyBindings(bindings);
     sokol.gfx.draw(0, @intCast(s2d.vertecies.items.len), 1);
+
+    s2d.vertecies.clearRetainingCapacity();
 }
 
-pub fn begin(s2d: *Sokol2d, width: u31, height: u31) void {
-    s2d.screen_size = .{ width, height };
-    s2d.vertecies.clearRetainingCapacity();
-    s2d.depth = 0;
+const BeginConfig = struct {
+    /// Area on screen/texture where to draw
+    viewport: AABB,
+
+    coordinates: AABB,
+};
+
+pub fn begin(s2d: *Sokol2d, config: BeginConfig) void {
+    const scale_vec = config.coordinates.end.minus(config.coordinates.start);
+    const translate: Mat2x3 = .translation(config.coordinates.start.negated());
+    const scale: Mat2x3 = .scale(.{
+        .x = 1 / scale_vec.x,
+        .y = 1 / scale_vec.y,
+    });
+
+    s2d.projection =
+        scale.times(translate);
+    s2d.screen_size = .{
+        @intFromFloat(config.viewport.end.x),
+        @intFromFloat(config.viewport.end.y),
+    };
 }
 
 pub fn deinit(s2d: *Sokol2d) void {

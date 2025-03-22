@@ -20,6 +20,7 @@ fn init() callconv(.c) void {
         return;
     };
 }
+
 const white: [4]f32 = .{ 1, 1, 1, 1 };
 const red: [4]f32 = .{ 1, 0, 0, 1 };
 const yellow: [4]f32 = .{ 1, 1, 0, 0.1 };
@@ -28,9 +29,26 @@ fn frame() callconv(.c) void {
     const width: u31 = @intCast(sokol.app.width());
     const height: u31 = @intCast(sokol.app.height());
 
-    state.sokol_2d.begin(width, height);
-    state.sokol_2d.drawLine(.{ .x = 0, .y = 0 }, .{ .x = 1, .y = 1 }, 0.01, red);
-    state.sokol_2d.drawCircle(.{ .x = 0.5, .y = 0.5 }, 0.5, yellow, 30);
+    const ratio = @as(f32, @floatFromInt(width)) / @as(f32, @floatFromInt(height));
+    state.sokol_2d.begin(.{
+        .viewport = .{ .start = .zero, .end = .{
+            .x = @floatFromInt(width),
+            .y = @floatFromInt(height),
+        } },
+        .coordinates = .{
+            .start = .{
+                .x = -ratio,
+                .y = -1,
+            },
+            .end = .{
+                .x = ratio,
+                .y = 1,
+            },
+        },
+    });
+
+    state.sokol_2d.drawLine(.{ .x = -1, .y = -1 }, .{ .x = 1, .y = 1 }, 0.01, red);
+    state.sokol_2d.drawCircle(.{ .x = 0, .y = 0 }, 0.1, yellow, 30);
     state.sokol_2d.drawRectGradient(0, 0, 0.3, 0.2, red, yellow, .horisontal);
 
     {
