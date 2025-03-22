@@ -46,9 +46,10 @@ fn frame() callconv(.c) void {
         },
     });
 
+    state.sokol_2d.drawRect(.{ .start = .{ .x = -1, .y = -1 }, .end = .{ .x = 1, .y = 1 } }, .dark_gray);
     state.sokol_2d.drawLine(.{ .x = -1, .y = -1 }, .{ .x = 1, .y = 1 }, 0.01, .red);
-    state.sokol_2d.drawCircle(.{ .x = 0, .y = 0 }, 0.1, .yellow, 30);
-    state.sokol_2d.drawRectGradient(0, 0, 0.3, 0.2, .red, .yellow, .vertical);
+    state.sokol_2d.drawCircle(.zero, 0.1, .yellow, 30);
+    state.sokol_2d.drawRectGradient(.fromCenterSize(.{ .x = 0, .y = 0 }, .{ .x = 0.3, .y = 0.1 }), .red, .yellow, .vertical);
 
     {
         sokol.gfx.beginPass(.{
