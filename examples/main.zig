@@ -74,7 +74,7 @@ fn event(e: [*c]const sokol.app.Event) callconv(.c) void {
 }
 
 fn deinit() callconv(.c) void {
-    state.sokol_2d.deinit();
+    state.sokol_2d.deinit(state.gpa);
 }
 
 pub fn main() !void {

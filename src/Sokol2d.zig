@@ -188,7 +188,10 @@ pub fn begin(s2d: *Sokol2d, config: BeginConfig) void {
     };
 }
 
-pub fn deinit(s2d: *Sokol2d) void {
-    _ = s2d;
+pub fn deinit(s2d: *Sokol2d, gpa: std.mem.Allocator) void {
+    sokol.gfx.destroyBuffer(s2d.vertex_buffer);
+    sokol.gfx.destroyPipeline(s2d.pipeline);
+    s2d.vertecies.deinit(gpa);
+
     log.info("deinit", .{});
 }
