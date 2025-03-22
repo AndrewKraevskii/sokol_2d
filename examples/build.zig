@@ -5,6 +5,8 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const use_llvm = b.option(bool, "use-llvm", "Use llvm backend");
+
     const sokol_dep = b.dependency("sokol", .{
         .target = target,
         .optimize = optimize,
@@ -26,6 +28,7 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "example",
         .root_module = exe_mod,
+        .use_llvm = use_llvm,
     });
 
     b.installArtifact(exe);
