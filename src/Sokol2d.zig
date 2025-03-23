@@ -3,7 +3,7 @@ const sokol = @import("sokol");
 const geom = @import("geom");
 const Vec2 = geom.Vec2;
 const Mat2x3 = geom.Mat2x3;
-const shader = @import("shaders/basic.glsl.zig");
+const shader = @import("shaders/basic.zig");
 
 const log = std.log.scoped(.sokol_2d);
 

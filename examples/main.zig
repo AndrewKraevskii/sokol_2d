@@ -77,7 +77,7 @@ fn deinit() callconv(.c) void {
     state.sokol_2d.deinit(state.gpa);
 }
 
-pub fn main() !void {
+pub fn main() void {
     var gpa_state: std.heap.DebugAllocator(.{}) = .init;
     state.gpa = gpa_state.allocator();
 
