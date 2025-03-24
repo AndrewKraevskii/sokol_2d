@@ -9,7 +9,7 @@ const log = std.log.scoped(.sokol_2d);
 
 const Sokol2d = @This();
 
-const max_vertecies = 0x1000;
+const max_vertecies = 0x10000;
 
 pipeline: sokol.gfx.Pipeline,
 vertecies: std.ArrayListUnmanaged(Vertex),
@@ -17,7 +17,7 @@ vertex_buffer: sokol.gfx.Buffer,
 viewport: AABB,
 projection: Mat2x3,
 
-pub const AABB = struct {
+pub const AABB = extern struct {
     start: Vec2,
     end: Vec2,
 
@@ -178,13 +178,15 @@ pub fn init(gpa: std.mem.Allocator) error{OutOfMemory}!Sokol2d {
             .type = .VERTEXBUFFER,
             .usage = .DYNAMIC,
             .label = "sokol2d vertex buffer",
-            .size = max_vertecies,
+            .size = max_vertecies * @sizeOf(Vertex),
         }),
         .projection = .identity,
     };
 }
 
 pub fn flush(s2d: *Sokol2d) void {
+    if (s2d.vertecies.items.len == 0) return;
+
     const viewport_size = s2d.viewport.size();
 
     sokol.gfx.applyViewport(
@@ -200,6 +202,7 @@ pub fn flush(s2d: *Sokol2d) void {
     for (s2d.vertecies.items) |*vertex| {
         vertex.pos = s2d.projection.timesPoint(vertex.pos);
     }
+    std.log.debug("vertex buffer {d}", .{s2d.vertecies.items.len});
     sokol.gfx.updateBuffer(s2d.vertex_buffer, sokol.gfx.asRange(s2d.vertecies.items));
 
     var bindings: sokol.gfx.Bindings = .{};
