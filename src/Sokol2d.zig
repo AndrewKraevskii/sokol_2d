@@ -202,7 +202,6 @@ pub fn flush(s2d: *Sokol2d) void {
     for (s2d.vertecies.items) |*vertex| {
         vertex.pos = s2d.projection.timesPoint(vertex.pos);
     }
-    std.log.debug("vertex buffer {d}", .{s2d.vertecies.items.len});
     sokol.gfx.updateBuffer(s2d.vertex_buffer, sokol.gfx.asRange(s2d.vertecies.items));
 
     var bindings: sokol.gfx.Bindings = .{};
