@@ -102,7 +102,7 @@ pub fn drawRectGradient(s2d: *Sokol2d, aabb: AABB, color1: Color, color2: Color,
 pub fn drawTriangle(
     s2d: *Sokol2d,
     points: [3]Vec2,
-    color: [4]f32,
+    color: Color,
 ) void {
     const coords: [6]Vertex = .{
         .{ .pos = points[0], .color0 = color },
@@ -110,6 +110,22 @@ pub fn drawTriangle(
         .{ .pos = points[2], .color0 = color },
     };
     s2d.vertecies.appendSliceAssumeCapacity(&coords);
+}
+
+pub fn drawPolygon(
+    s2d: *Sokol2d,
+    points: []const Vec2,
+    color: Color,
+) void {
+    if (points.len < 3) return;
+    const point1 = points[0];
+    for (points[1 .. points.len - 1], points[2..]) |point2, point3| {
+        s2d.vertecies.appendSliceAssumeCapacity(&.{
+            .{ .pos = point1, .color0 = color },
+            .{ .pos = point2, .color0 = color },
+            .{ .pos = point3, .color0 = color },
+        });
+    }
 }
 
 pub fn drawLine(s2d: *Sokol2d, from: Vec2, to: Vec2, thickness: f32, color: Color) void {
