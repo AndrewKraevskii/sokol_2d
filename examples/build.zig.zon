@@ -5,11 +5,15 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .sokol = .{
-            .url = "git+https://github.com/floooh/sokol-zig.git#ee31971e1e3001cbe3e80bc7ac73e38046ee6722",
-            .hash = "sokol-0.1.0-pb1HK6KkLADZ67wG6foFxCnd4-K56gDyhwKA1XgSR2CM",
+            .url = "git+https://github.com/floooh/sokol-zig.git#a52ef4c152515875eb2324c8f5eb18f378453796",
+            .hash = "sokol-0.1.0-pb1HK_iCLQBifF4Fcnhvo4V2SqzWlTXEhpVlRTY-Ah0V",
         },
         .sokol_2d = .{
             .path = "../",
+        },
+        .geom = .{
+            .url = "git+https://github.com/Games-by-Mason/geom#60d8484528395db2f09cf19ba15e7a45c351dd37",
+            .hash = "geom-0.0.0-U1ma30s1AgDCk6ibs_NDhTAH3tDYq5j7NUrvlMWQ4ZYX",
         },
     },
     .paths = .{

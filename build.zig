@@ -1,8 +1,9 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const sokol = @import("sokol");
+const Build = std.Build;
 
-pub fn build(b: *std.Build) !void {
+pub fn build(b: *Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -41,16 +42,18 @@ pub fn build(b: *std.Build) !void {
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_lib_unit_tests.step);
 
-    const shd = try buildShader(b, sokol_dep);
-    lib.step.dependOn(&shd.step);
+    const shd = try createShaderModule(b, sokol_dep);
+    lib.root_module.addImport("shader", shd);
 }
 
 // compile shader via sokol-shdc
-fn buildShader(b: *std.Build, dep_sokol: *std.Build.Dependency) !*std.Build.Step.Run {
-    return try sokol.shdc.compile(b, .{
-        .dep_shdc = dep_sokol.builder.dependency("shdc", .{}),
-        .input = b.path("src/shaders/basic.glsl"),
-        .output = b.path("src/shaders/basic.zig"),
+fn createShaderModule(b: *Build, dep_sokol: *Build.Dependency) !*Build.Module {
+    const mod_sokol = dep_sokol.module("sokol");
+    const dep_shdc = dep_sokol.builder.dependency("shdc", .{});
+    return sokol.shdc.createModule(b, "shader", mod_sokol, .{
+        .shdc_dep = dep_shdc,
+        .input = "src/shaders/basic.glsl",
+        .output = "shader.zig",
         .slang = .{
             .glsl410 = true,
             .glsl300es = true,

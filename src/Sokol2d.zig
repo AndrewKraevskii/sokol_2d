@@ -191,8 +191,10 @@ pub fn init(gpa: std.mem.Allocator) error{OutOfMemory}!Sokol2d {
         .vertecies = try .initCapacity(gpa, max_vertecies),
         .viewport = .{ .start = .zero, .end = .zero },
         .vertex_buffer = sokol.gfx.makeBuffer(.{
-            .type = .VERTEXBUFFER,
-            .usage = .DYNAMIC,
+            .usage = .{
+                .vertex_buffer = true,
+                .dynamic_update = true,
+            },
             .label = "sokol2d vertex buffer",
             .size = max_vertecies * @sizeOf(Vertex),
         }),
